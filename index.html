@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>RBX Server Manager - Universal Roblox Server Explorer</title>
+  
+  <!-- Clean SVG Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect width='20' height='8' x='2' y='2' rx='2' ry='2'/><rect width='20' height='8' x='2' y='14' rx='2' ry='2'/><line x1='6' x2='6.01' y1='6' y2='6'/><line x1='6' x2='6.01' y1='18' y2='18'/></svg>" />
+  
+  <!-- Google Fonts: Outfit & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Iconify CDN Script -->
+  <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
+
+  <!-- Supabase JS Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Modular CSS Architecture (ECS Design System) -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- App Header Navbar -->
+    <header class="app-header">
+      <div class="brand-section">
+        <div class="brand-title-group">
+          <h1>RBX Server Manager</h1>
+          <!-- Subtitle shown only when Place ID is selected -->
+          <div class="brand-subtitle" id="header-brand-subtitle" style="display: none;">
+            <span>Game: <b id="header-game-name"></b></span>
+            <span>•</span>
+            <span class="badge-code" id="header-place-id"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <!-- Optional Multi-Device Cloud Sync Badge -->
+        <div id="sync-status-badge"></div>
+
+        <!-- Session Bridge Status Badge -->
+        <div id="bridge-status-badge"></div>
+
+        <!-- Navigation Tabs (Instant SPA Switch) -->
+        <div class="nav-tabs">
+          <button onclick="App.switchTab('explorer')" id="tab-btn-explorer" class="btn-tab active" type="button">
+            <iconify-icon icon="lucide:compass"></iconify-icon>
+            <span>Explorer</span>
+          </button>
+          <button onclick="App.switchTab('saved')" id="tab-btn-saved" class="btn-tab" type="button">
+            <iconify-icon icon="lucide:bookmark"></iconify-icon>
+            <span>Bookmarks</span>
+          </button>
+        </div>
+
+        <!-- Menu Drawer Trigger -->
+        <button onclick="Sidebar.toggle(true)" class="btn btn-secondary header-menu-btn" type="button" title="Open Navigation Menu">
+          <iconify-icon icon="lucide:menu"></iconify-icon>
+        </button>
+      </div>
+    </header>
+
+    <!-- Game Presets Carousel Bar (Hidden on Bookmarks Tab) -->
+    <section class="presets-bar" id="presets-bar">
+      <!-- Generated dynamically by app.js -->
+    </section>
+
+    <!-- Main Workspace Area -->
+    <main class="main-workspace">
+      
+      <!-- Instant Server Joiner Card -->
+      <section class="card-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <iconify-icon icon="lucide:zap" style="color: var(--accent-primary);"></iconify-icon>
+            <span>Instant Server Joiner</span>
+          </h2>
+          <span class="panel-subtitle">Supports 8-digit short codes (e.g. <b>27eb-4606</b>) or full Job IDs</span>
+        </div>
+
+        <div class="grid-2col">
+          <!-- Place ID -->
+          <div class="input-group">
+            <label class="input-label" for="quick-place-id">
+              <span>Place ID</span>
+            </label>
+            <div class="input-wrapper">
+              <input type="text" id="quick-place-id" value="" oninput="App.onPlaceIdInput(this.value)" onchange="App.onPlaceIdChange(this.value)" placeholder="Enter Place ID (e.g. 189707)..." class="input-control" />
+              <button onclick="App.scanServers()" class="btn btn-secondary btn-sm" style="flex-shrink: 0;" title="Scan servers for this Place ID">
+                Scan
+              </button>
+            </div>
+          </div>
+
+          <!-- Server ID -->
+          <div class="input-group">
+            <label class="input-label" for="quick-job-id">
+              <span>Server ID / Short Code</span>
+            </label>
+            <div style="display: flex; gap: 0.5rem;">
+              <div class="input-wrapper" style="flex: 1;">
+                <input type="text" id="quick-job-id" placeholder="Paste 8-char code (e.g. 27eb-4606) or UUID..." class="input-control" />
+              </div>
+              <button onclick="App.handleQuickJoin()" class="btn btn-primary" style="flex-shrink: 0;">
+                <iconify-icon icon="lucide:play"></iconify-icon>
+                <span>1-Click Join</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-time Status Badge -->
+        <div id="quick-status" style="display: none; width: fit-content;"></div>
+      </section>
+
+      <!-- TAB 1: Live Server Explorer -->
+      <section id="tab-explorer" class="card-panel">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">
+              <iconify-icon icon="lucide:compass" style="color: var(--accent-cyan);"></iconify-icon>
+              <span>Live Public Servers</span>
+            </h2>
+            <p class="panel-subtitle">Discover active instances, sort by player count/ping, and 1-click launch.</p>
+          </div>
+          <button onclick="App.scanServers()" class="btn btn-secondary btn-sm">
+            <iconify-icon icon="lucide:refresh-cw"></iconify-icon>
+            <span>Scan Servers</span>
+          </button>
+        </div>
+
+        <!-- Filters Toolbar with Spacing & Advanced Controls -->
+        <div class="filters-toolbar">
+          <div class="filters-quick-group">
+            <button onclick="App.setFilter('lowest-players')" data-filter-btn="lowest-players" class="btn btn-primary btn-sm">
+              <iconify-icon icon="lucide:users"></iconify-icon>
+              <span>Lowest Players</span>
+            </button>
+            <button onclick="App.setFilter('best-ping')" data-filter-btn="best-ping" class="btn btn-secondary btn-sm">
+              <iconify-icon icon="lucide:wifi"></iconify-icon>
+              <span>Lowest Ping (MS)</span>
+            </button>
+            <button onclick="App.setFilter('smart-dupe')" data-filter-btn="smart-dupe" class="btn btn-secondary btn-sm" title="Smart composite score: low ping + low players">
+              <iconify-icon icon="lucide:sparkles" style="color: var(--accent-cyan);"></iconify-icon>
+              <span>Smart Match</span>
+            </button>
+            <button onclick="App.setFilter('highest-players')" data-filter-btn="highest-players" class="btn btn-secondary btn-sm">
+              <iconify-icon icon="lucide:users-round"></iconify-icon>
+              <span>Highest Players</span>
+            </button>
+            <button onclick="App.setFilter('default')" data-filter-btn="default" class="btn btn-secondary btn-sm">
+              <iconify-icon icon="lucide:arrow-down-up"></iconify-icon>
+              <span>Default</span>
+            </button>
+          </div>
+
+          <!-- Advanced Filters Toggle -->
+          <button onclick="App.toggleAdvancedFilters()" id="adv-filter-toggle-btn" class="btn btn-secondary btn-sm" title="Show advanced player and ping filters">
+            <iconify-icon icon="lucide:sliders-horizontal"></iconify-icon>
+            <span>Filters</span>
+            <span id="adv-filter-badge" class="badge badge-emerald" style="display: none; padding: 0.1rem 0.35rem; font-size: 0.65rem;">0</span>
+          </button>
+        </div>
+
+        <!-- Advanced Filters Expandable Panel -->
+        <div id="advanced-filters-panel" class="advanced-filters-panel" style="display: none;">
+          <!-- Max Players Filter -->
+          <div class="filter-item">
+            <label class="input-label" style="font-size: 0.7rem;">Player Count</label>
+            <select id="filter-max-players" onchange="App.onAdvancedFilterChange()" class="filter-select">
+              <option value="all">All Player Counts</option>
+              <option value="2">Low Pop (1-2 Players)</option>
+              <option value="4">Small Server (≤ 4 Players)</option>
+              <option value="10">Medium Server (≤ 10 Players)</option>
+              <option value="not-full">Not Full (< Max)</option>
+            </select>
+          </div>
+
+          <!-- Max Ping Filter -->
+          <div class="filter-item">
+            <label class="input-label" style="font-size: 0.7rem;">Max Latency (Ping)</label>
+            <select id="filter-max-ping" onchange="App.onAdvancedFilterChange()" class="filter-select">
+              <option value="all">Any Latency</option>
+              <option value="80">Ultra Low (< 80 ms)</option>
+              <option value="120">Smooth (< 120 ms)</option>
+              <option value="200">Standard (< 200 ms)</option>
+            </select>
+          </div>
+
+          <!-- Search Server Code -->
+          <div class="filter-item">
+            <label class="input-label" style="font-size: 0.7rem;">Search Server Code</label>
+            <input type="text" id="filter-search-query" oninput="App.onAdvancedFilterChange()" placeholder="Filter by code (e.g. 27eb)..." class="filter-select" style="font-family: var(--font-mono);" />
+          </div>
+
+          <!-- Reset Filter Action -->
+          <div class="filter-item" style="justify-content: flex-end;">
+            <button onclick="App.resetAdvancedFilters()" class="btn btn-secondary btn-sm" style="height: 30px; margin-top: auto;">
+              <iconify-icon icon="lucide:rotate-ccw"></iconify-icon>
+              <span>Reset Filters</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Incremental Background Streaming Progress Bar -->
+        <div id="explorer-stream-status" style="display: none; align-items: center; justify-content: space-between; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.45rem 0.85rem; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.45rem;">
+            <iconify-icon icon="lucide:loader-2" class="animate-spin" style="color: var(--accent-cyan); font-size: 1rem;"></iconify-icon>
+            <span id="explorer-stream-text">Streaming all servers in background...</span>
+          </div>
+          <button onclick="App.stopStreaming()" class="btn btn-secondary btn-sm" style="padding: 0.15rem 0.5rem; font-size: 0.68rem;">
+            <span>Stop Scan</span>
+          </button>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="explorer-loading" style="display: none; align-items: center; justify-content: center; gap: 0.5rem; padding: 2.5rem; color: var(--accent-cyan);">
+          <iconify-icon icon="lucide:loader-2" class="animate-spin" style="font-size: 1.5rem;"></iconify-icon>
+          <span style="font-size: 0.8rem; font-weight: 600;">Scanning active Roblox servers...</span>
+        </div>
+
+        <!-- Error & Bridge Promo Banner -->
+        <div id="explorer-error" style="display: none; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-md); padding: 1rem; flex-direction: column; gap: 0.5rem;">
+          <div style="display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: var(--accent-amber); font-size: 0.82rem;">
+            <iconify-icon icon="lucide:alert-triangle"></iconify-icon>
+            <span>Public Proxies Blocked by Roblox Cloudflare</span>
+          </div>
+          <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
+            Connect your browser's signed-in Roblox session using the 1-click Userscript to scan servers with 0ms latency and zero blocks.
+          </p>
+          <div>
+            <button onclick="Bridge.showModal()" class="btn btn-primary btn-sm">
+              <iconify-icon icon="lucide:zap"></iconify-icon>
+              <span>Connect Session Bridge (1-Click)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Explorer Server Cards Grid (15 per page) -->
+        <div id="explorer-grid" class="grid-3col">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+
+        <!-- Pagination Bar -->
+        <div id="explorer-pagination" class="pagination-bar" style="display: none;">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+      </section>
+
+      <!-- TAB 2: Clean & Lightweight Saved Bookmarks -->
+      <section id="tab-saved" class="card-panel hidden">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">
+              <iconify-icon icon="lucide:bookmark" style="color: var(--accent-indigo);"></iconify-icon>
+              <span>Saved Server Bookmarks</span>
+            </h2>
+            <p class="panel-subtitle">Instant 1-click launch for your favorite server instances & short codes.</p>
+          </div>
+          <button onclick="App.showAddBookmarkModal()" class="btn btn-primary btn-sm">
+            <iconify-icon icon="lucide:plus"></iconify-icon>
+            <span>Add Server</span>
+          </button>
+        </div>
+
+        <!-- Dynamic Game Filter & Sort Bar for Bookmarks -->
+        <div class="filters-toolbar" id="bookmarks-toolbar" style="display: none;">
+          <!-- Generated dynamically: [ All Games (X) ] [ Game 1 (Y) ] ... -->
+          <div class="filters-quick-group" id="bookmarks-game-filters"></div>
+
+          <!-- Bookmark Sort Selector -->
+          <div style="display: flex; align-items: center; gap: 0.4rem;">
+            <select id="bookmarks-sort-select" onchange="App.onBookmarkSortChange(this.value)" class="filter-select" style="height: 32px; font-size: 0.74rem;">
+              <option value="recent">Sort: Recently Added</option>
+              <option value="game-title">Sort: Game Title (A-Z)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Bookmarks Server Grid (3 Tiles Per Row) -->
+        <div id="saved-servers-grid" class="grid-3col">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+      </section>
+
+    </main>
+
+    <!-- App Footer -->
+    <footer class="app-footer">
+      <div>
+        <b style="color: var(--text-main);">RBX Server Manager</b> • <a href="https://github.com/HanazonoArchive" target="_blank" rel="noopener noreferrer" style="color: var(--accent-primary); text-decoration: none; font-weight: 600;">HanazonoArchive</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Modular Scripts Architecture (Unix Philosophy) -->
+  <script src="js/constants.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/themeController.js"></script>
+  <script src="js/robloxApi.js"></script>
+  <script src="js/bridge.js"></script>
+  <script src="js/authSync.js"></script>
+  <script src="js/filterEngine.js"></script>
+  <script src="js/presetsCarousel.js"></script>
+  <script src="js/quickJoiner.js"></script>
+  <script src="js/serverExplorer.js"></script>
+  <script src="js/bookmarkManager.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

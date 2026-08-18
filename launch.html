@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Launcher</title>
+  
+  <!-- Clean SVG Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='5 3 19 12 5 21 5 3'/></svg>" />
+  
+  <!-- Fonts & Design Tokens -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  
+  <!-- Style Sheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  
+  <style>
+    body {
+      background: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+      user-select: none;
+      transition: background var(--transition-normal);
+    }
+    .launch-card {
+      background: var(--bg-card);
+      backdrop-filter: var(--backdrop-blur, blur(12px));
+      -webkit-backdrop-filter: var(--backdrop-blur, blur(12px));
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg, 12px);
+      padding: 2.25rem 2rem;
+      text-align: center;
+      box-shadow: var(--shadow-lg, 0 10px 30px rgba(0,0,0,0.6));
+      max-width: 400px;
+      width: 100%;
+      animation: fadeIn 0.2s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .launch-icon-badge {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      background: var(--accent-glow, rgba(16, 185, 129, 0.15));
+      border: 1px solid var(--accent-primary);
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .launch-icon-badge svg {
+      width: 24px;
+      height: 24px;
+    }
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 0 0 0.35rem 0;
+    }
+    .launch-target-badge {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm, 4px);
+      padding: 0.25rem 0.65rem;
+      display: inline-block;
+      margin-bottom: 0.85rem;
+    }
+    .launch-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin: 0 0 1.5rem 0;
+    }
+    .launch-btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="launch-card">
+    <div class="launch-icon-badge">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    </div>
+    <h1>Launching Roblox...</h1>
+    <div class="launch-target-badge" id="target-info">Connecting...</div>
+    <p class="launch-desc">Click <b>"Open Roblox"</b> in the browser prompt above.<br>This tab will close automatically.</p>
+    <div class="launch-btn-group">
+      <button class="btn btn-primary btn-sm" onclick="relaunch()">
+        <span>Launch Again</span>
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="window.close()">
+        <span>Close Tab</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Parse parameters
+    const params = new URLSearchParams(window.location.search);
+    const placeId = params.get('placeId') || '';
+    const jobId = params.get('jobId') || '';
+    const theme = params.get('theme') || localStorage.getItem('rbx_server_theme') || 'dark';
+
+    // Apply Theme
+    document.documentElement.setAttribute('data-theme', theme);
+
+    // Display target info
+    const shortCode = (jobId && jobId.length > 9) ? (jobId.substring(0, 4) + '-' + jobId.substring(jobId.length - 4)) : (jobId || '');
+    const targetLabel = shortCode ? ('Server: ' + shortCode) : ('Place #' + placeId);
+    const targetEl = document.getElementById('target-info');
+    if (targetEl) targetEl.textContent = targetLabel;
+
+    // Construct deep-link URI
+    let uri = 'roblox://experiences/start?placeId=' + encodeURIComponent(placeId);
+    if (jobId) {
+      uri += '&gameInstanceId=' + encodeURIComponent(jobId);
+    }
+
+    function relaunch() {
+      window.location.href = uri;
+    }
+
+    // Launch protocol
+    setTimeout(relaunch, 50);
+
+    // Auto-close handlers
+    let hasBlurred = false;
+    window.addEventListener('blur', () => {
+      hasBlurred = true;
+    });
+
+    window.addEventListener('focus', () => {
+      if (hasBlurred) {
+        setTimeout(() => {
+          window.close();
+        }, 800);
+      }
+    });
+
+    // 15-second safety timer
+    setTimeout(() => {
+      window.close();
+    }, 15000);
+  </script>
+</body>
+</html>

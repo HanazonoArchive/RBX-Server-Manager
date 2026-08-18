@@ -1,0 +1,268 @@
+/* ==========================================================================
+   RBX Server Manager - Design System Variables & Tokens
+   Inspired by ECS Architecture (Variables, Themes, Glassmorphism)
+   ========================================================================== */
+
+:root {
+  /* Font Families */
+  --font-sans: 'Outfit', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+
+  /* Base Color Palette (Default: Dark Void) */
+  --bg-primary: #090c14;
+  --bg-secondary: #111625;
+  --bg-tertiary: #192033;
+  --bg-card: rgba(22, 29, 46, 0.75);
+  --bg-card-hover: rgba(29, 39, 61, 0.9);
+
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-highlight: rgba(255, 255, 255, 0.18);
+
+  /* Primary & Accent Colors (Emerald Hub) */
+  --accent-primary: #10b981;
+  --accent-primary-hover: #059669;
+  --accent-glow: rgba(16, 185, 129, 0.25);
+
+  --accent-cyan: #06b6d4;
+  --accent-indigo: #6366f1;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+
+  /* Text Colors */
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --text-inverse: #0f172a;
+
+  /* Input & Controls */
+  --input-bg: #0d1220;
+  --input-border: rgba(16, 185, 129, 0.35);
+  --input-focus-border: var(--accent-primary);
+  --input-focus-glow: rgba(16, 185, 129, 0.25);
+
+  /* Glassmorphism & Effects */
+  --backdrop-blur: blur(12px);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  /* Clean Rounded Corner Tokens */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  --transition-fast: 0.12s ease-out;
+  --transition-normal: 0.2s ease-out;
+}
+
+/* ======= THEME: Cyber Neon ======= */
+[data-theme="cyber"] {
+  --bg-primary: #05050c;
+  --bg-secondary: #0d0d1e;
+  --bg-tertiary: #161630;
+  --bg-card: rgba(18, 18, 42, 0.8);
+  --border-color: rgba(0, 240, 255, 0.15);
+  --border-highlight: rgba(0, 240, 255, 0.4);
+  --accent-primary: #00f0ff;
+  --accent-primary-hover: #00c4d4;
+  --accent-glow: rgba(0, 240, 255, 0.22);
+  --accent-cyan: #00f0ff;
+  --accent-indigo: #3b82f6;
+  --text-main: #ffffff;
+  --text-muted: #8ba5d4;
+  --text-dim: #546b9a;
+  --input-bg: #0a0a1d;
+  --input-border: rgba(0, 240, 255, 0.3);
+  --input-focus-border: #00f0ff;
+  --input-focus-glow: rgba(0, 240, 255, 0.25);
+}
+
+/* ======= THEME: Clean Light ======= */
+[data-theme="light"] {
+  --bg-primary: #f1f5f9;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e2e8f0;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card-hover: #ffffff;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --border-highlight: rgba(5, 150, 105, 0.35);
+  --accent-primary: #059669;
+  --accent-primary-hover: #047857;
+  --accent-glow: rgba(5, 150, 105, 0.15);
+  --accent-cyan: #0891b2;
+  --accent-indigo: #4f46e5;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-dim: #94a3b8;
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --input-bg: #f8fafc;
+  --input-border: rgba(5, 150, 105, 0.3);
+  --input-focus-border: #059669;
+  --input-focus-glow: rgba(5, 150, 105, 0.15);
+}
+
+/* ======= THEME: Emerald Tycoon ======= */
+[data-theme="emerald"] {
+  --bg-primary: #04100c;
+  --bg-secondary: #0a1f18;
+  --bg-tertiary: #102d24;
+  --bg-card: rgba(10, 31, 24, 0.8);
+  --border-color: rgba(16, 185, 129, 0.18);
+  --border-highlight: rgba(16, 185, 129, 0.4);
+  --accent-primary: #10b981;
+  --accent-primary-hover: #34d399;
+  --accent-glow: rgba(16, 185, 129, 0.25);
+  --accent-cyan: #34d399;
+  --accent-indigo: #059669;
+  --text-main: #ecfdf5;
+  --text-muted: #a7f3d0;
+  --text-dim: #6ee7b7;
+  --input-bg: #061712;
+  --input-border: rgba(16, 185, 129, 0.4);
+}
+
+/* ======= THEME: Synthwave Purple ======= */
+[data-theme="synthwave"] {
+  --bg-primary: #0b0618;
+  --bg-secondary: #140b2b;
+  --bg-tertiary: #1f1142;
+  --bg-card: rgba(23, 12, 48, 0.8);
+  --bg-card-hover: rgba(35, 18, 74, 0.9);
+  --border-color: rgba(217, 70, 239, 0.18);
+  --border-highlight: rgba(217, 70, 239, 0.4);
+  --accent-primary: #d946ef;
+  --accent-primary-hover: #c026d3;
+  --accent-glow: rgba(217, 70, 239, 0.22);
+  --accent-cyan: #06b6d4;
+  --accent-indigo: #a855f7;
+  --text-main: #faf5ff;
+  --text-muted: #d8b4fe;
+  --text-dim: #9333ea;
+  --input-bg: #0f0722;
+  --input-border: rgba(217, 70, 239, 0.35);
+  --input-focus-border: #d946ef;
+  --input-focus-glow: rgba(217, 70, 239, 0.25);
+}
+
+/* ======= THEME: Sakura Blossom ======= */
+[data-theme="sakura"] {
+  --bg-primary: #12070f;
+  --bg-secondary: #1f0b1a;
+  --bg-tertiary: #2e1026;
+  --bg-card: rgba(36, 13, 30, 0.8);
+  --bg-card-hover: rgba(54, 19, 45, 0.9);
+  --border-color: rgba(244, 63, 94, 0.18);
+  --border-highlight: rgba(244, 63, 94, 0.4);
+  --accent-primary: #fb7185;
+  --accent-primary-hover: #f43f5e;
+  --accent-glow: rgba(251, 113, 133, 0.22);
+  --accent-cyan: #fda4af;
+  --accent-indigo: #f43f5e;
+  --text-main: #fff1f2;
+  --text-muted: #fecdd3;
+  --text-dim: #e11d48;
+  --input-bg: #180814;
+  --input-border: rgba(251, 113, 133, 0.35);
+  --input-focus-border: #fb7185;
+  --input-focus-glow: rgba(251, 113, 133, 0.25);
+}
+
+/* ======= THEME: Solar Flare ======= */
+[data-theme="solar"] {
+  --bg-primary: #110803;
+  --bg-secondary: #1c0d05;
+  --bg-tertiary: #2b1408;
+  --bg-card: rgba(33, 15, 6, 0.8);
+  --bg-card-hover: rgba(49, 23, 9, 0.9);
+  --border-color: rgba(249, 115, 22, 0.18);
+  --border-highlight: rgba(249, 115, 22, 0.4);
+  --accent-primary: #f97316;
+  --accent-primary-hover: #ea580c;
+  --accent-glow: rgba(249, 115, 22, 0.22);
+  --accent-cyan: #f59e0b;
+  --accent-indigo: #ea580c;
+  --text-main: #fff7ed;
+  --text-muted: #fed7aa;
+  --text-dim: #c2410c;
+  --input-bg: #160a04;
+  --input-border: rgba(249, 115, 22, 0.35);
+  --input-focus-border: #f97316;
+  --input-focus-glow: rgba(249, 115, 22, 0.25);
+}
+
+/* ======= THEME: Oceanic Abyss ======= */
+[data-theme="ocean"] {
+  --bg-primary: #040d1a;
+  --bg-secondary: #08172e;
+  --bg-tertiary: #0c2345;
+  --bg-card: rgba(8, 23, 46, 0.8);
+  --bg-card-hover: rgba(13, 35, 70, 0.9);
+  --border-color: rgba(56, 189, 248, 0.18);
+  --border-highlight: rgba(56, 189, 248, 0.4);
+  --accent-primary: #0ea5e9;
+  --accent-primary-hover: #0284c7;
+  --accent-glow: rgba(14, 165, 233, 0.22);
+  --accent-cyan: #38bdf8;
+  --accent-indigo: #0284c7;
+  --text-main: #f0f9ff;
+  --text-muted: #bae6fd;
+  --text-dim: #0369a1;
+  --input-bg: #061224;
+  --input-border: rgba(14, 165, 233, 0.35);
+  --input-focus-border: #0ea5e9;
+  --input-focus-glow: rgba(14, 165, 233, 0.25);
+}
+
+/* ======= THEME: Dracula Tokyo ======= */
+[data-theme="dracula"] {
+  --bg-primary: #181920;
+  --bg-secondary: #21222c;
+  --bg-tertiary: #282a36;
+  --bg-card: rgba(33, 34, 44, 0.85);
+  --bg-card-hover: rgba(43, 45, 58, 0.95);
+  --border-color: rgba(189, 147, 249, 0.2);
+  --border-highlight: rgba(189, 147, 249, 0.45);
+  --accent-primary: #50fa7b;
+  --accent-primary-hover: #69ff94;
+  --accent-glow: rgba(80, 250, 123, 0.22);
+  --accent-cyan: #8be9fd;
+  --accent-purple: #bd93f9;
+  --accent-indigo: #bd93f9;
+  --accent-rose: #ff79c6;
+  --text-main: #f8f8f2;
+  --text-muted: #b9bad4;
+  --text-dim: #6272a4;
+  --input-bg: #1c1d26;
+  --input-border: rgba(189, 147, 249, 0.35);
+  --input-focus-border: #50fa7b;
+  --input-focus-glow: rgba(80, 250, 123, 0.25);
+}
+
+/* ======= THEME: OLED Monochrome ======= */
+[data-theme="monochrome"] {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #141414;
+  --bg-card: rgba(14, 14, 14, 0.9);
+  --bg-card-hover: rgba(24, 24, 24, 0.95);
+  --border-color: rgba(255, 255, 255, 0.15);
+  --border-highlight: rgba(255, 255, 255, 0.4);
+  --accent-primary: #ffffff;
+  --accent-primary-hover: #e5e5e5;
+  --accent-glow: rgba(255, 255, 255, 0.18);
+  --accent-cyan: #e5e5e5;
+  --accent-indigo: #d4d4d4;
+  --text-main: #ffffff;
+  --text-muted: #a3a3a3;
+  --text-dim: #737373;
+  --input-bg: #050505;
+  --input-border: rgba(255, 255, 255, 0.25);
+  --input-focus-border: #ffffff;
+  --input-focus-glow: rgba(255, 255, 255, 0.2);
+}
+
